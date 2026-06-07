@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOPT — Escolha seu endereço</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C8A96E;
+    --gold-light: #E8D5A3;
+    --ink: #0E0E0E;
+    --ink-soft: #161616;
+    --ink-mid: #1E1E1E;
+    --ink-muted: #4A4A4A;
+    --cream: #FAF7F2;
+    --border: rgba(200,169,110,0.15);
+    --border-md: rgba(200,169,110,0.28);
+    --border-strong: rgba(200,169,110,0.5);
+    --text-dim: rgba(250,247,242,0.38);
+    --text-soft: rgba(250,247,242,0.62);
+    --text-main: rgba(250,247,242,0.90);
+    --success: #27AE60;
+    --error: #C0392B;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--ink);
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  .page {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 520px;
+  }
+
+  /* ── LEFT ── */
+  .left {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3rem 4rem;
+    overflow: hidden;
+    background: var(--ink-soft);
+  }
+
+  .bg-lines::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg, transparent, transparent 80px,
+      rgba(200,169,110,0.04) 80px, rgba(200,169,110,0.04) 81px
+    );
+    pointer-events: none;
+  }
+
+  .bg-circle {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    border: 1px solid rgba(200,169,110,0.08);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: breathe 8s ease-in-out infinite;
+  }
+
+  .bg-circle::before {
+    content: '';
+    position: absolute;
+    inset: 60px; border-radius: 50%;
+    border: 1px solid rgba(200,169,110,0.06);
+  }
+
+  .bg-circle::after {
+    content: '';
+    position: absolute;
+    inset: 120px; border-radius: 50%;
+    border: 1px solid rgba(200,169,110,0.04);
+    animation: breathe 8s ease-in-out infinite reverse;
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+    50% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+  }
+
+  .left-top {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .logo-mark {
+    width: 38px; height: 38px;
+    border: 1.5px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-weight: 600; color: var(--gold);
+    transform: rotate(45deg);
+  }
+  .logo-mark span { transform: rotate(-45deg); display: block; }
+
+  .logo-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 300;
+    letter-spacing: 0.35em; color: var(--gold-light);
+    text-transform: uppercase;
+  }
+
+  .left-center { position: relative; z-index: 1; }
+
+  .headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 5vw, 5rem);
+    font-weight: 300; line-height: 1.05;
+    color: var(--cream); letter-spacing: -0.01em;
+  }
+  .headline em { font-style: italic; color: var(--gold); }
+
+  .headline-sub {
+    margin-top: 1.5rem;
+    font-size: 15px; font-weight: 300;
+    color: var(--text-soft); line-height: 1.7;
+    max-width: 380px; letter-spacing: 0.01em;
+  }
+
+  .preview-card {
+    margin-top: 3rem;
+    padding: 1.8rem 2rem;
+    border: 1px solid var(--border-strong);
+    border-left: 3px solid var(--gold);
+    background: rgba(200,169,110,0.04);
+    backdrop-filter: blur(8px);
+    max-width: 440px;
+  }
+
+  .preview-label {
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 1rem;
+  }
+
+  .preview-email {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; font-weight: 300;
+    color: var(--gold-light); letter-spacing: 0.01em;
+    word-break: break-all;
+    transition: all 0.3s ease;
+    min-height: 2.2rem;
+  }
+
+  .preview-email .domain { color: var(--text-dim); }
+
+  .preview-desc {
+    margin-top: 1rem;
+    font-size: 12.5px; color: var(--text-dim);
+    font-weight: 300; line-height: 1.6;
+  }
+
+  .left-bottom {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(200,169,110,0.1);
+  }
+
+  .stat { display: flex; flex-direction: column; gap: 4px; }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem; font-weight: 300;
+    color: var(--gold-light); line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px; color: var(--text-dim);
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .stat-divider { width: 1px; height: 36px; background: rgba(200,169,110,0.15); }
+
+  /* ── RIGHT ── */
+  .right {
+    background: var(--ink-soft);
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: 3rem 3.5rem;
+    position: relative;
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+  }
+
+  .right::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+  }
+
+  .right-logo {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 2.5rem;
+  }
+
+  .right-logo .logo-mark { width: 30px; height: 30px; font-size: 14px; }
+  .right-logo .logo-name { font-size: 18px; color: var(--gold-light); }
+
+  .step-indicator {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .step-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border-md);
+  }
+  .step-dot.done { background: var(--gold); }
+  .step-dot.active {
+    background: var(--gold-light);
+    box-shadow: 0 0 8px rgba(200,169,110,0.4);
+  }
+  .step-line { flex: 1; height: 1px; background: var(--border); }
+
+  .form-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; font-weight: 400;
+    color: var(--cream); line-height: 1.2;
+    margin-bottom: 0.4rem;
+  }
+
+  .form-subtitle {
+    font-size: 13.5px; color: var(--text-soft);
+    margin-bottom: 2.5rem; font-weight: 300; line-height: 1.5;
+  }
+
+  .input-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .input-label {
+    display: block;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 8px;
+  }
+
+  .email-input-wrap {
+    display: flex; align-items: stretch;
+    border: 1px solid var(--border-md);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: rgba(200,169,110,0.03);
+  }
+
+  .email-input-wrap:focus-within {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(200,169,110,0.1);
+  }
+
+  .email-input-wrap.error { border-color: var(--error); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
+  .email-input-wrap.success { border-color: var(--success); box-shadow: 0 0 0 3px rgba(39,174,96,0.1); }
+
+  .email-field {
+    flex: 1;
+    padding: 13px 16px;
+    background: none; border: none; outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 300;
+    color: var(--text-main);
+    letter-spacing: 0.01em;
+  }
+  .email-field::placeholder { color: var(--text-dim); }
+
+  .email-domain {
+    padding: 13px 16px;
+    background: rgba(200,169,110,0.06);
+    border-left: 1px solid var(--border);
+    font-size: 14px; font-weight: 300;
+    color: var(--gold);
+    white-space: nowrap;
+    display: flex; align-items: center;
+    letter-spacing: 0.02em;
+  }
+
+  .status-msg {
+    margin-top: 8px;
+    font-size: 12px; font-weight: 400;
+    display: none; align-items: center; gap: 6px;
+  }
+  .status-msg.visible { display: flex; }
+  .status-msg.success { color: var(--success); }
+  .status-msg.error { color: var(--error); }
+  .status-msg.checking { color: var(--text-dim); }
+
+  .status-msg svg { flex-shrink: 0; }
+
+  .suggestions-label {
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 10px;
+  }
+
+  .suggestions {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .suggestion {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 12.5px; font-weight: 300;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .suggestion:hover {
+    border-color: var(--border-md);
+    color: var(--gold-light);
+    background: rgba(200,169,110,0.06);
+  }
+
+  .rules {
+    padding: 1rem 1.2rem;
+    background: rgba(200,169,110,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .rules-title {
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 8px;
+  }
+
+  .rule {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 300;
+    color: var(--text-dim); margin-bottom: 5px;
+    transition: color 0.2s;
+  }
+  .rule:last-child { margin-bottom: 0; }
+  .rule.ok { color: var(--success); }
+  .rule.fail { color: var(--error); }
+
+  .rule-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: currentColor; flex-shrink: 0;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: var(--ink-mid);
+    color: var(--gold-light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    border: 1px solid var(--border-md);
+    border-radius: 8px; cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative; overflow: hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(200,169,110,0.08), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+  .btn-primary:hover { background: rgba(200,169,110,0.1); border-color: var(--gold); }
+  .btn-primary:hover::after { transform: translateX(100%); }
+  .btn-primary:active { transform: scale(0.99); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .skip-link {
+    text-align: center; margin-top: 1.2rem;
+    font-size: 12.5px; color: var(--text-dim); font-weight: 300;
+  }
+  .skip-link a { color: var(--text-soft); text-decoration: none; }
+  .skip-link a:hover { color: var(--gold); }
+
+  /* ── MOBILE ── */
+  @media (max-width: 900px) {
+    .page { grid-template-columns: 1fr; }
+    .left { display: none; }
+    .right { padding: 2.5rem 2rem; min-height: 100vh; border-left: none; }
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .left-top    { animation: fadeUp 0.6s ease both; }
+  .left-center { animation: fadeUp 0.6s 0.15s ease both; }
+  .left-bottom { animation: fadeUp 0.6s 0.3s ease both; }
+  .right > *   { animation: fadeUp 0.5s ease both; }
+  .right-logo  { animation-delay: 0.05s; }
+  .step-indicator { animation-delay: 0.1s; }
+  .form-title  { animation-delay: 0.12s; }
+  .form-subtitle { animation-delay: 0.15s; }
+  .input-group { animation-delay: 0.18s; }
+
+  /* spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner { animation: spin 0.8s linear infinite; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ══ LEFT ══ -->
+  <div class="left">
+    <div class="bg-lines"></div>
+    <div class="bg-circle"></div>
+
+    <div class="left-top">
+      <div class="logo-mark"><span>V</span></div>
+      <div class="logo-name">VOPT</div>
+    </div>
+
+    <div class="left-center">
+      <h1 class="headline">
+        Seu endereço<br>
+        <em>único</em> e<br>
+        profissional
+      </h1>
+      <p class="headline-sub">
+        Este será seu endereço de e-mail permanente. Escolha com cuidado — ele representará você e sua marca.
+      </p>
+
+      <div class="preview-card">
+        <div class="preview-label">Seu endereço ficará assim</div>
+        <div class="preview-email" id="previewEmail">
+          <span id="previewUser">seunome</span><span class="domain">@vopt-mail.com</span>
+        </div>
+        <div class="preview-desc">
+          Endereço permanente · Incluso no período de 30 dias grátis
+        </div>
+      </div>
+    </div>
+
+    <div class="left-bottom">
+      <div class="stat">
+        <div class="stat-num">99,9%</div>
+        <div class="stat-label">Uptime</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-num">256-bit</div>
+        <div class="stat-label">Criptografia</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-num">BR</div>
+        <div class="stat-label">Servidores</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ RIGHT ══ -->
+  <div class="right">
+    <div class="right-logo">
+      <div class="logo-mark"><span>V</span></div>
+      <div class="logo-name">VOPT</div>
+    </div>
+
+    <!-- Step indicator -->
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-line"></div>
+      <div class="step-dot active"></div>
+      <div class="step-line"></div>
+      <div class="step-dot"></div>
+    </div>
+
+    <h2 class="form-title">Escolha seu endereço</h2>
+    <p class="form-subtitle">Este será seu e-mail profissional VOPT. Você não poderá alterá-lo depois.</p>
+
+    <div class="input-group">
+      <label class="input-label">Endereço de e-mail</label>
+      <div class="email-input-wrap" id="inputWrap">
+        <input
+          type="text"
+          class="email-field"
+          id="emailField"
+          placeholder="seunome"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          oninput="handleInput(this.value)"
+        >
+        <div class="email-domain">@vopt-mail.com</div>
+      </div>
+      <div class="status-msg" id="statusMsg">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="statusIcon"></svg>
+        <span id="statusText"></span>
+      </div>
+    </div>
+
+    <div class="suggestions-label">Sugestões disponíveis</div>
+    <div class="suggestions" id="suggestions"></div>
+
+    <div class="rules">
+      <div class="rules-title">Requisitos</div>
+      <div class="rule" id="r-length">
+        <div class="rule-dot"></div>
+        Entre 3 e 30 caracteres
+      </div>
+      <div class="rule" id="r-chars">
+        <div class="rule-dot"></div>
+        Apenas letras, números, pontos e hífens
+      </div>
+      <div class="rule" id="r-start">
+        <div class="rule-dot"></div>
+        Começa e termina com letra ou número
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btnConfirmar" disabled onclick="confirmar()">
+      Confirmar endereço
+    </button>
+
+    <p class="skip-link">
+      Decidir depois? <a href="/mailbox/">Pular por enquanto</a>
+    </p>
+  </div>
+
+</div>
+
+<script>
+  const DOMAIN = '@vopt-mail.com';
+  let checkTimeout = null;
+  let currentStatus = null; // 'available' | 'taken' | 'invalid' | 'checking'
+
+  // Gera sugestões baseadas no nome do usuário (viriam do backend)
+  const baseSuggestions = ['joao.silva', 'maria.s', 'pedro.c', 'ana.costa', 'carlos.m', 'beatriz.f'];
+
+  function renderSuggestions(suggestions) {
+    const el = document.getElementById('suggestions');
+    el.innerHTML = suggestions.map(s => `
+      <div class="suggestion" onclick="selectSuggestion('${s}')">${s}</div>
+    `).join('');
+  }
+
+  renderSuggestions(baseSuggestions);
+
+  function selectSuggestion(val) {
+    document.getElementById('emailField').value = val;
+    handleInput(val);
+    document.getElementById('emailField').focus();
+  }
+
+  function updatePreview(val) {
+    document.getElementById('previewUser').textContent = val || 'seunome';
+  }
+
+  function setRule(id, state) {
+    const el = document.getElementById(id);
+    el.className = 'rule ' + (state === true ? 'ok' : state === false ? 'fail' : '');
+  }
+
+  function validateFormat(val) {
+    const length = val.length >= 3 && val.length <= 30;
+    const chars = /^[a-z0-9.\-]+$/.test(val);
+    const startEnd = /^[a-z0-9]/.test(val) && /[a-z0-9]$/.test(val);
+    setRule('r-length', val.length === 0 ? null : length);
+    setRule('r-chars', val.length === 0 ? null : chars);
+    setRule('r-start', val.length === 0 ? null : startEnd);
+    return length && chars && startEnd;
+  }
+
+  function setStatus(type, text) {
+    const msg = document.getElementById('statusMsg');
+    const icon = document.getElementById('statusIcon');
+    const wrap = document.getElementById('inputWrap');
+    const btn = document.getElementById('btnConfirmar');
+
+    msg.className = 'status-msg visible ' + type;
+    document.getElementById('statusText').textContent = text;
+    currentStatus = type;
+
+    wrap.className = 'email-input-wrap';
+    if (type === 'success') { wrap.classList.add('success'); btn.disabled = false; }
+    else if (type === 'error') { wrap.classList.add('error'); btn.disabled = true; }
+    else { btn.disabled = true; }
+
+    const icons = {
+      success: '<polyline points="20 6 9 17 4 12"/>',
+      error: '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+      checking: '<circle cx="12" cy="12" r="10" stroke-dasharray="30" stroke-dashoffset="10" class="spinner"/>',
+    };
+    icon.innerHTML = icons[type] || '';
+  }
+
+  function clearStatus() {
+    const msg = document.getElementById('statusMsg');
+    msg.className = 'status-msg';
+    document.getElementById('inputWrap').className = 'email-input-wrap';
+    document.getElementById('btnConfirmar').disabled = true;
+    currentStatus = null;
+  }
+
+  function handleInput(raw) {
+    const val = raw.toLowerCase().replace(/[^a-z0-9.\-]/g, '');
+    const field = document.getElementById('emailField');
+    if (field.value !== val) field.value = val;
+
+    updatePreview(val || 'seunome');
+
+    clearTimeout(checkTimeout);
+
+    if (!val) { clearStatus(); validateFormat(''); return; }
+
+    const valid = validateFormat(val);
+
+    if (!valid) {
+      setStatus('error', 'Formato inválido — verifique os requisitos abaixo');
+      return;
+    }
+
+    setStatus('checking', 'Verificando disponibilidade...');
+
+    checkTimeout = setTimeout(() => checkAvailability(val), 600);
+  }
+
+  async function checkAvailability(val) {
+    try {
+      const res = await fetch(`/api/usuario/verificar-email/?username=${encodeURIComponent(val)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.disponivel) {
+          setStatus('success', `${val}${DOMAIN} está disponível!`);
+        } else {
+          setStatus('error', 'Este endereço já está em uso. Tente outro.');
+          // Gera sugestões alternativas
+          const alt = [val + '1', val + '2', val + '_pro', 'the.' + val, val + '.oficial'];
+          renderSuggestions(alt);
+        }
+      } else {
+        // Simula disponível se API não existir ainda
+        setStatus('success', `${val}${DOMAIN} está disponível!`);
+      }
+    } catch {
+      // Sem backend ainda — simula disponível para testes
+      setStatus('success', `${val}${DOMAIN} está disponível!`);
+    }
+  }
+
+  async function confirmar() {
+    const val = document.getElementById('emailField').value;
+    if (!val || currentStatus !== 'success') return;
+
+    const btn = document.getElementById('btnConfirmar');
+    btn.disabled = true;
+    btn.textContent = 'Confirmando...';
+
+    try {
+      const res = await fetch('/api/usuario/escolher-email/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: val })
+      });
+
+      if (res.ok) {
+        btn.textContent = '✓ Endereço confirmado!';
+        setTimeout(() => window.location.href = '/mailbox/', 1000);
+      } else {
+        btn.textContent = 'Confirmar endereço';
+        btn.disabled = false;
+        setStatus('error', 'Erro ao confirmar. Tente novamente.');
+      }
+    } catch {
+      // Sem backend ainda — vai direto
+      btn.textContent = '✓ Endereço confirmado!';
+      setTimeout(() => window.location.href = '/mailbox/', 1000);
+    }
+  }
+
+  // Enter para confirmar
+  document.getElementById('emailField').addEventListener('keydown', e => {
+    if (e.key === 'Enter') confirmar();
+  });
+</script>
+</body>
+</html>

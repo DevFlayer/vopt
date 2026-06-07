@@ -870,7 +870,7 @@
 
       if (res.ok) {
         showAlert('success', data.mensagem || 'Conta criada com sucesso! Redirecionando...');
-        setTimeout(() => window.location.href = '/', 2000);
+        setTimeout(() => window.location.href = '/escolher-email/', 2000);
       } else {
         const erro = typeof data.erro === 'string' ? data.erro : JSON.stringify(data.erro);
         showAlert('error', erro || 'Erro ao criar conta. Tente novamente.');
