@@ -58,24 +58,16 @@ MIDDLEWARE = [
 ROOT_URLCONF = "vopt.urls"
 WSGI_APPLICATION = "vopt.wsgi.application"
 
-# ─── Banco de dados — desenvolvimento local com SQLite ────────────────────────
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "postgres.jdpcyipujxfgazfbywml",
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": "aws-1-us-east-2.pooler.supabase.com",
+        "PORT": "6543",
     }
 }
-
-# Para usar MongoDB em produção, restaure o bloco abaixo e instale/configure o MongoDB:
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "djongo",
-#         "NAME":   os.getenv("MONGO_DB_NAME", "vopt_db"),
-#         "CLIENT": {
-#             "host": os.getenv("MONGO_URI", "mongodb://localhost:27017"),
-#         },
-#     }
-# }
 
 # ─── Auth customizado ─────────────────────────────────────────────────────────
 AUTH_USER_MODEL = "usuarios.Usuario"
