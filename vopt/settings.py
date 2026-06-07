@@ -5,17 +5,18 @@ import os
 from pathlib import Path
 from datetime import timedelta
 import secrets
-import os
-from pathlib import Path
 
 try:
     from dotenv import load_dotenv
 except ImportError:
     load_dotenv = lambda *args, **kwargs: None
 
-load_dotenv()
-
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Carrega o arquivo .env explicitamente do diretório raiz
+dotenv_path = os.path.join(BASE_DIR, ".env")
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
 
 # ─── Segurança ───────────────────────────────────────────────────────────────
 DEBUG = os.getenv("APP_ENV", "development") == "development"
@@ -68,8 +69,23 @@ DATABASES = {
         "PASSWORD": os.getenv("DB_PASSWORD"),
         "HOST": "aws-1-us-east-2.pooler.supabase.com",
         "PORT": "6543",
+        "OPTIONS": {
+            "sslmode": "require",
+        },
     }
 }
+
+# Logs temporários de depuração (Remova após confirmar a conexão)
+if DEBUG:
+    print("\n" + "="*50)
+    print("VERIFICAÇÃO DE CONEXÃO SUPABASE")
+    print(f"HOST: {DATABASES['default']['HOST']}")
+    print(f"PORT: {DATABASES['default']['PORT']}")
+    print(f"DATABASE: {DATABASES['default']['NAME']}")
+    print(f"USER: {DATABASES['default']['USER']}")
+    print(f"SENHA CARREGADA: {'Sim' if DATABASES['default']['PASSWORD'] else 'NÃO (Verifique seu .env)'}")
+    print("="*50 + "\n")
+
 
 # ─── Auth customizado ─────────────────────────────────────────────────────────
 AUTH_USER_MODEL = "usuarios.Usuario"
