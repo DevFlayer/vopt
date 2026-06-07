@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 import secrets
+import dj_database_url
 
 try:
     from dotenv import load_dotenv
@@ -33,7 +34,8 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 # ─── Apps ────────────────────────────────────────────────────────────────────
 INSTALLED_APPS = [
-    # Django core — admin removido pois usamos API pura
+    # Django core
+    "django.contrib.admin",
     "django.contrib.contenttypes",
     "django.contrib.auth",
     "django.contrib.sessions",
@@ -62,31 +64,12 @@ ROOT_URLCONF = "vopt.urls"
 WSGI_APPLICATION = "vopt.wsgi.application"
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres.jdpcyipujxfgazfbywml",
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": "aws-1-us-east-2.pooler.supabase.com",
-        "PORT": "6543",
-        "OPTIONS": {
-            "sslmode": "require",
-        },
-    }
+    "default": dj_database_url.config(
+        default=os.getenv("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
-
-# Logs temporários de depuração (Remova após confirmar a conexão)
-if DEBUG:
-    print("\n" + "="*50)
-    print("VERIFICAÇÃO DE CONEXÃO SUPABASE")
-    print(f"HOST: {DATABASES['default']['HOST']}")
-    print(f"PORT: {DATABASES['default']['PORT']}")
-    print(f"DATABASE: {DATABASES['default']['NAME']}")
-    print(f"USER: {DATABASES['default']['USER']}")
-    print(f"SENHA CARREGADA: {'Sim' if DATABASES['default']['PASSWORD'] else 'NÃO (Verifique seu .env)'}")
-    print("="*50 + "\n")
-
-
 # ─── Auth customizado ─────────────────────────────────────────────────────────
 AUTH_USER_MODEL = "usuarios.Usuario"
 
