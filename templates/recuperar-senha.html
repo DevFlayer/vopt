@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOPT — Recuperar Acesso</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C8A96E;
+    --gold-light: #E8D5A3;
+    --gold-pale: #F7F0E1;
+    --ink: #0E0E0E;
+    --ink-soft: #1C1C1C;
+    --ink-muted: #4A4A4A;
+    --cream: #FAF7F2;
+    --white: #FFFFFF;
+    --border: rgba(200, 169, 110, 0.25);
+    --border-strong: rgba(200, 169, 110, 0.5);
+    --error: #C0392B;
+    --success: #27AE60;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--ink);
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  .page {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 480px;
+  }
+
+  /* ── LEFT PANEL ── */
+  .left {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3rem 4rem;
+    overflow: hidden;
+    background: var(--ink-soft);
+  }
+
+  .bg-lines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .bg-lines::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    left: -20%;
+    width: 140%;
+    height: 140%;
+    background:
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 80px,
+        rgba(200,169,110,0.04) 80px,
+        rgba(200,169,110,0.04) 81px
+      );
+  }
+
+  .bg-circle {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    border: 1px solid rgba(200,169,110,0.08);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: breathe 8s ease-in-out infinite;
+  }
+
+  .bg-circle::before {
+    content: '';
+    position: absolute;
+    inset: 60px;
+    border-radius: 50%;
+    border: 1px solid rgba(200,169,110,0.06);
+  }
+
+  .bg-circle::after {
+    content: '';
+    position: absolute;
+    inset: 120px;
+    border-radius: 50%;
+    border: 1px solid rgba(200,169,110,0.04);
+    animation: breathe 8s ease-in-out infinite reverse;
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+    50% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+  }
+
+  .left-top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    width: 38px;
+    height: 38px;
+    border: 1.5px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+    transform: rotate(45deg);
+  }
+
+  .logo-mark span { transform: rotate(-45deg); display: block; }
+
+  .logo-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: 0.35em;
+    color: var(--gold-light);
+    text-transform: uppercase;
+  }
+
+  .left-center {
+    position: relative;
+    z-index: 1;
+  }
+
+  .headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 5vw, 5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--cream);
+    letter-spacing: -0.01em;
+  }
+
+  .headline em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .headline-sub {
+    margin-top: 1.5rem;
+    font-size: 15px;
+    font-weight: 300;
+    color: rgba(250,247,242,0.55);
+    line-height: 1.7;
+    max-width: 380px;
+    letter-spacing: 0.01em;
+  }
+
+  .info-card {
+    position: relative;
+    margin-top: 3rem;
+    padding: 1.5rem 2rem;
+    border: 1px solid var(--border-strong);
+    border-left: 3px solid var(--gold);
+    background: rgba(200,169,110,0.04);
+    backdrop-filter: blur(8px);
+    max-width: 440px;
+  }
+
+  .info-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--gold-light);
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 0.85rem;
+  }
+
+  .info-item:last-child { margin-bottom: 0; }
+
+  .info-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+
+  .info-text {
+    font-size: 13px;
+    color: rgba(250,247,242,0.55);
+    line-height: 1.55;
+    font-weight: 300;
+  }
+
+  .info-text strong {
+    color: var(--gold-light);
+    font-weight: 400;
+    display: block;
+    margin-bottom: 1px;
+  }
+
+  .left-bottom {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(200,169,110,0.1);
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--gold-light);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: rgba(250,247,242,0.35);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(200,169,110,0.15);
+  }
+
+  /* ── RIGHT PANEL ── */
+  .right {
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 3.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .right::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+  }
+
+  .right-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 2.5rem;
+  }
+
+  .right-logo .logo-mark {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+
+  .right-logo .logo-name {
+    font-size: 18px;
+    color: var(--ink);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--ink-muted);
+    text-decoration: none;
+    margin-bottom: 2rem;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: var(--gold); }
+
+  .back-link svg { width: 14px; height: 14px; }
+
+  .form-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 0.4rem;
+  }
+
+  .form-subtitle {
+    font-size: 13.5px;
+    color: var(--ink-muted);
+    margin-bottom: 2.2rem;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  /* Tab selector */
+  .tab-row {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.8rem;
+    border: 1px solid rgba(14,14,14,0.12);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--ink-muted);
+    transition: all 0.25s ease;
+    text-align: center;
+  }
+
+  .tab.active {
+    background: var(--ink);
+    color: var(--gold-light);
+  }
+
+  .form-group {
+    margin-bottom: 1.2rem;
+  }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 7px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"] {
+    width: 100%;
+    padding: 12px 15px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--ink);
+    background: var(--white);
+    border: 1px solid rgba(14,14,14,0.15);
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+
+  input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(200,169,110,0.12);
+  }
+
+  input::placeholder {
+    color: rgba(14,14,14,0.28);
+    font-weight: 300;
+  }
+
+  input.error {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+  }
+
+  .field-error {
+    font-size: 11.5px;
+    color: var(--error);
+    margin-top: 5px;
+    display: none;
+    font-weight: 400;
+  }
+
+  .field-error.visible { display: block; }
+
+  .btn-primary {
+    width: 100%;
+    padding: 14px;
+    margin-top: 0.5rem;
+    background: var(--ink);
+    color: var(--gold-light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid var(--ink);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(200,169,110,0.08), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+
+  .btn-primary:hover { background: var(--ink-soft); border-color: var(--gold); }
+  .btn-primary:hover::after { transform: translateX(100%); }
+  .btn-primary:active { transform: scale(0.99); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .alert {
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 400;
+    margin-bottom: 1.2rem;
+    display: none;
+    line-height: 1.5;
+  }
+
+  .alert.visible { display: block; }
+
+  .alert-error {
+    background: rgba(192,57,43,0.08);
+    border: 1px solid rgba(192,57,43,0.3);
+    color: var(--error);
+  }
+
+  .alert-success {
+    background: rgba(39,174,96,0.08);
+    border: 1px solid rgba(39,174,96,0.3);
+    color: var(--success);
+  }
+
+  .success-icon {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1rem 0;
+  }
+
+  .success-icon.visible { display: flex; }
+
+  .success-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(39,174,96,0.1);
+    border: 1.5px solid rgba(39,174,96,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.2rem;
+  }
+
+  .success-circle svg { width: 28px; height: 28px; }
+
+  .success-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+
+  .success-desc {
+    font-size: 13.5px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+    font-weight: 300;
+    max-width: 320px;
+  }
+
+  .success-desc strong { color: var(--ink); font-weight: 500; }
+
+  .login-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 13px;
+    color: var(--ink-muted);
+    font-weight: 300;
+  }
+
+  .login-link a {
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: 400;
+  }
+
+  .login-link a:hover { text-decoration: underline; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 900px) {
+    .page { grid-template-columns: 1fr; }
+    .left { display: none; }
+    .right { padding: 2.5rem 2rem; min-height: 100vh; }
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .left-top    { animation: fadeUp 0.6s ease both; }
+  .left-center { animation: fadeUp 0.6s 0.15s ease both; }
+  .left-bottom { animation: fadeUp 0.6s 0.3s ease both; }
+  .right > *   { animation: fadeUp 0.6s ease both; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ══════════ LEFT PANEL ══════════ -->
+  <div class="left">
+    <div class="bg-lines"></div>
+    <div class="bg-circle"></div>
+
+    <div class="left-top">
+      <div class="logo-mark"><span>V</span></div>
+      <div class="logo-name">VOPT</div>
+    </div>
+
+    <div class="left-center">
+      <h1 class="headline">
+        Recupere<br>
+        seu <em>acesso</em><br>
+        com segurança
+      </h1>
+      <p class="headline-sub">
+        Enviaremos um link de redefinição para o e-mail ou celular cadastrado na sua conta VOPT.
+      </p>
+
+      <div class="info-card">
+        <div class="info-card-title">Como funciona</div>
+        <div class="info-item">
+          <div class="info-dot"></div>
+          <div class="info-text">
+            <strong>Informe seu e-mail ou celular</strong>
+            Use o mesmo que você cadastrou na sua conta.
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-dot"></div>
+          <div class="info-text">
+            <strong>Receba o link de redefinição</strong>
+            Verifique sua caixa de entrada ou SMS em alguns instantes.
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-dot"></div>
+          <div class="info-text">
+            <strong>Crie uma nova senha</strong>
+            O link expira em 30 minutos por segurança.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="left-bottom">
+      <div class="stat">
+        <div class="stat-num">99,9%</div>
+        <div class="stat-label">Uptime garantido</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-num">256-bit</div>
+        <div class="stat-label">Criptografia</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-num">BR</div>
+        <div class="stat-label">Servidores locais</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ RIGHT PANEL ══════════ -->
+  <div class="right">
+    <div class="right-logo">
+      <div class="logo-mark"><span>V</span></div>
+      <div class="logo-name">VOPT</div>
+    </div>
+
+    <a href="/" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Voltar ao login
+    </a>
+
+    <h2 class="form-title">Recuperar acesso</h2>
+    <p class="form-subtitle">Informe seu e-mail ou celular para receber o link de redefinição.</p>
+
+    <!-- Tab selector -->
+    <div class="tab-row">
+      <button class="tab active" onclick="switchTab('email', this)">E-mail</button>
+      <button class="tab" onclick="switchTab('celular', this)">Celular</button>
+    </div>
+
+    <div id="alert-error" class="alert alert-error"></div>
+
+    <!-- Formulário -->
+    <div id="form-area">
+      <div id="campo-email" class="form-group">
+        <label for="input-email">E-mail cadastrado</label>
+        <input type="email" id="input-email" placeholder="voce@seudominio.com.br" autocomplete="email">
+        <div class="field-error" id="email-error">Informe um e-mail válido.</div>
+      </div>
+
+      <div id="campo-celular" class="form-group" style="display:none;">
+        <label for="input-celular">Celular cadastrado</label>
+        <input type="tel" id="input-celular" placeholder="(11) 99999-9999" oninput="mascaraCelular(this)" autocomplete="tel">
+        <div class="field-error" id="celular-error">Informe um celular válido.</div>
+      </div>
+
+      <button type="button" class="btn-primary" id="btn-enviar" onclick="enviar()">
+        Enviar link de redefinição
+      </button>
+    </div>
+
+    <!-- Estado de sucesso -->
+    <div id="success-area" class="success-icon">
+      <div class="success-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#27AE60" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <div class="success-title">Link enviado!</div>
+      <p class="success-desc" id="success-msg">
+        Verifique sua caixa de entrada. O link expira em <strong>30 minutos</strong>.
+      </p>
+    </div>
+
+    <p class="login-link">
+      Lembrou a senha? <a href="/">Voltar ao login</a>
+    </p>
+  </div>
+
+</div>
+
+<script>
+  let tabAtual = 'email';
+
+  function switchTab(tab, el) {
+    tabAtual = tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('campo-email').style.display  = tab === 'email'   ? 'block' : 'none';
+    document.getElementById('campo-celular').style.display = tab === 'celular' ? 'block' : 'none';
+    document.getElementById('alert-error').classList.remove('visible');
+  }
+
+  function mascaraCelular(input) {
+    let v = input.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length > 6) {
+      v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+    } else if (v.length > 2) {
+      v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+    } else {
+      v = v.replace(/^(\d{0,2})/, '($1');
+    }
+    input.value = v;
+  }
+
+  function showError(id, show) {
+    const el = document.getElementById(id + '-error');
+    const input = document.getElementById('input-' + id);
+    if (show) {
+      el && el.classList.add('visible');
+      input && input.classList.add('error');
+    } else {
+      el && el.classList.remove('visible');
+      input && input.classList.remove('error');
+    }
+  }
+
+  async function enviar() {
+    document.getElementById('alert-error').classList.remove('visible');
+
+    let valor = '';
+    let valid = true;
+
+    if (tabAtual === 'email') {
+      valor = document.getElementById('input-email').value.trim();
+      const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
+      showError('email', !ok);
+      if (!ok) valid = false;
+    } else {
+      valor = document.getElementById('input-celular').value.trim();
+      const ok = /^\(\d{2}\) \d{4,5}-\d{4}$/.test(valor);
+      showError('celular', !ok);
+      if (!ok) valid = false;
+    }
+
+    if (!valid) return;
+
+    const btn = document.getElementById('btn-enviar');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    try {
+      const body = tabAtual === 'email'
+        ? { email: valor }
+        : { celular: valor };
+
+      const res = await fetch('/api/auth/recuperar-senha/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (res.ok) {
+        document.getElementById('form-area').style.display = 'none';
+        const msg = tabAtual === 'email'
+          ? `Enviamos um link para <strong>${valor}</strong>. Verifique sua caixa de entrada. O link expira em <strong>30 minutos</strong>.`
+          : `Enviamos um SMS para <strong>${valor}</strong>. O link expira em <strong>30 minutos</strong>.`;
+        document.getElementById('success-msg').innerHTML = msg;
+        document.getElementById('success-area').classList.add('visible');
+      } else {
+        const data = await res.json();
+        const errEl = document.getElementById('alert-error');
+        errEl.textContent = data.erro || 'Não encontramos uma conta com esse dado. Verifique e tente novamente.';
+        errEl.classList.add('visible');
+        btn.disabled = false;
+        btn.textContent = 'Enviar link de redefinição';
+      }
+    } catch (e) {
+      const errEl = document.getElementById('alert-error');
+      errEl.textContent = 'Erro de conexão. Verifique sua internet e tente novamente.';
+      errEl.classList.add('visible');
+      btn.disabled = false;
+      btn.textContent = 'Enviar link de redefinição';
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') enviar();
+  });
+</script>
+</body>
+</html>

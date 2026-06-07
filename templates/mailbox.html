@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOPT — Caixa de Entrada</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold:        #C8A96E;
+  --gold-light:  #E8D5A3;
+  --gold-pale:   #F7F0E1;
+  --ink:         #0E0E0E;
+  --ink-soft:    #161616;
+  --ink-mid:     #1E1E1E;
+  --ink-muted:   #4A4A4A;
+  --cream:       #FAF7F2;
+  --cream-dark:  #F0EBE0;
+  --border:      rgba(200,169,110,0.15);
+  --border-md:   rgba(200,169,110,0.28);
+  --text-dim:    rgba(250,247,242,0.38);
+  --text-soft:   rgba(250,247,242,0.62);
+  --text-main:   rgba(250,247,242,0.90);
+  --sidebar-w:   240px;
+  --header-h:    58px;
+}
+
+html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--cream); overflow: hidden; }
+
+/* ─── LAYOUT ──────────────────────────────────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 340px 1fr;
+  grid-template-rows: var(--header-h) 1fr;
+  height: 100vh;
+}
+
+/* ─── HEADER ──────────────────────────────────────────────────────── */
+.header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem 0 1.2rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--ink-soft);
+  gap: 1rem;
+  position: relative;
+  z-index: 10;
+}
+
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: calc(var(--sidebar-w) - 1.2rem);
+  flex-shrink: 0;
+}
+
+.logo-gem {
+  width: 30px; height: 30px;
+  border: 1.5px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px; font-weight: 600; color: var(--gold);
+  transform: rotate(45deg); flex-shrink: 0;
+}
+.logo-gem span { transform: rotate(-45deg); display: block; }
+
+.logo-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; font-weight: 300;
+  letter-spacing: 0.35em; color: var(--gold-light);
+  text-transform: uppercase;
+}
+
+.header-search {
+  flex: 1;
+  max-width: 480px;
+  position: relative;
+}
+
+.header-search input {
+  width: 100%;
+  padding: 8px 14px 8px 36px;
+  background: rgba(200,169,110,0.06);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 300;
+  color: var(--cream);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.header-search input::placeholder { color: var(--text-dim); }
+.header-search input:focus { border-color: var(--border-md); background: rgba(200,169,110,0.1); }
+
+.search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--text-dim); pointer-events: none;
+}
+
+.header-right {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.hbtn {
+  width: 34px; height: 34px;
+  background: none; border: none;
+  border-radius: 6px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-soft);
+  transition: background 0.2s, color 0.2s;
+  position: relative;
+}
+.hbtn:hover { background: rgba(200,169,110,0.08); color: var(--gold-light); }
+
+.notif-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--gold); border: 1.5px solid var(--ink-soft);
+}
+
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--ink-mid), var(--ink-muted));
+  border: 1.5px solid var(--border-md);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px; font-weight: 600; color: var(--gold);
+  cursor: pointer; margin-left: 4px;
+  flex-shrink: 0;
+}
+
+/* ─── SIDEBAR ─────────────────────────────────────────────────────── */
+.sidebar {
+  background: var(--ink-soft);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  padding: 1.2rem 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.sidebar::-webkit-scrollbar { display: none; }
+
+.compose-btn {
+  margin: 0 1rem 1.4rem;
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 9px;
+  background: var(--ink-mid);
+  border: 1px solid var(--border-md);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--gold-light);
+  transition: all 0.2s;
+}
+.compose-btn:hover { background: rgba(200,169,110,0.12); border-color: var(--gold); }
+.compose-btn svg { color: var(--gold); flex-shrink: 0; }
+
+.nav-section { margin-bottom: 0.4rem; }
+
+.nav-label {
+  padding: 4px 1.2rem 6px;
+  font-size: 9.5px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 1rem;
+  margin: 0 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px; font-weight: 400;
+  color: var(--text-soft);
+  transition: all 0.18s;
+  position: relative;
+}
+.nav-item:hover { background: rgba(200,169,110,0.06); color: var(--text-main); }
+.nav-item.active {
+  background: rgba(200,169,110,0.1);
+  color: var(--gold-light);
+  border: 1px solid rgba(200,169,110,0.18);
+}
+.nav-item.active svg { color: var(--gold); }
+.nav-item svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--text-dim); transition: color 0.18s; }
+.nav-item:hover svg { color: var(--gold-light); }
+
+.nav-badge {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: 100px;
+  font-size: 10px; font-weight: 500;
+  background: rgba(200,169,110,0.15);
+  color: var(--gold);
+}
+
+.nav-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.8rem 1rem;
+}
+
+.storage-wrap { padding: 1rem 1.2rem; margin-top: auto; }
+
+.storage-label {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: var(--text-dim);
+  margin-bottom: 7px; font-weight: 300;
+}
+
+.storage-bar {
+  height: 3px; background: rgba(200,169,110,0.1); border-radius: 3px; overflow: hidden;
+}
+.storage-fill {
+  height: 100%; width: 34%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 3px;
+}
+
+/* ─── EMAIL LIST ──────────────────────────────────────────────────── */
+.email-list {
+  border-right: 1px solid var(--border);
+  background: var(--ink-mid);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.list-header {
+  padding: 0.9rem 1.2rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.list-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.35rem; font-weight: 400;
+  color: var(--cream);
+  letter-spacing: 0.01em;
+}
+
+.list-actions {
+  display: flex; gap: 4px;
+}
+
+.list-btn {
+  width: 28px; height: 28px;
+  background: none; border: none; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-dim); cursor: pointer;
+  transition: all 0.18s;
+}
+.list-btn:hover { background: rgba(200,169,110,0.08); color: var(--gold-light); }
+
+.list-filter {
+  padding: 0.55rem 1.2rem;
+  display: flex; gap: 6px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.filter-chip {
+  padding: 4px 11px;
+  border-radius: 100px; font-size: 11px; font-weight: 400;
+  cursor: pointer; border: 1px solid transparent;
+  color: var(--text-dim); transition: all 0.18s;
+  letter-spacing: 0.03em;
+}
+.filter-chip:hover { color: var(--text-soft); }
+.filter-chip.active {
+  background: rgba(200,169,110,0.1);
+  border-color: rgba(200,169,110,0.25);
+  color: var(--gold-light);
+}
+
+.emails { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(200,169,110,0.15) transparent; }
+.emails::-webkit-scrollbar { width: 4px; }
+.emails::-webkit-scrollbar-thumb { background: rgba(200,169,110,0.15); border-radius: 4px; }
+
+.email-item {
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid rgba(200,169,110,0.07);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.18s;
+  animation: fadeItem 0.4s ease both;
+}
+.email-item:hover { background: rgba(200,169,110,0.04); }
+.email-item.active { background: rgba(200,169,110,0.08); }
+.email-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 2.5px;
+  background: var(--gold);
+}
+.email-item.unread .email-sender { color: var(--cream); font-weight: 500; }
+.email-item.unread .email-subject { color: var(--text-main); }
+
+@keyframes fadeItem {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.email-row1 { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
+
+.email-sender {
+  font-size: 13px; font-weight: 400;
+  color: var(--text-soft);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  flex: 1;
+}
+
+.email-time { font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
+.email-time.today { color: var(--gold); }
+
+.email-subject {
+  font-size: 12.5px; font-weight: 300;
+  color: var(--text-soft);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.email-preview {
+  font-size: 11.5px; color: var(--text-dim); font-weight: 300;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.unread-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--gold); flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(200,169,110,0.5);
+}
+
+.starred svg { color: var(--gold) !important; fill: var(--gold); }
+
+/* ─── EMAIL VIEWER ────────────────────────────────────────────────── */
+.viewer {
+  background: var(--ink);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.viewer-toolbar {
+  padding: 0.75rem 2rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 6px;
+  flex-shrink: 0;
+}
+
+.tbtn {
+  width: 32px; height: 32px;
+  background: none; border: none; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-dim); cursor: pointer;
+  transition: all 0.18s;
+}
+.tbtn:hover { background: rgba(200,169,110,0.08); color: var(--gold-light); }
+
+.tbtn-sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+
+.viewer-scroll { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(200,169,110,0.12) transparent; }
+.viewer-scroll::-webkit-scrollbar { width: 5px; }
+.viewer-scroll::-webkit-scrollbar-thumb { background: rgba(200,169,110,0.12); border-radius: 5px; }
+
+.viewer-inner { padding: 2.5rem 2.5rem 2rem; max-width: 720px; }
+
+.msg-subject {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.9rem; font-weight: 400;
+  color: var(--cream);
+  line-height: 1.2;
+  margin-bottom: 1.6rem;
+}
+
+.msg-meta {
+  display: flex; align-items: flex-start; gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sender-avatar {
+  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--ink-mid) 0%, rgba(200,169,110,0.15) 100%);
+  border: 1px solid var(--border-md);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px; font-weight: 600; color: var(--gold);
+}
+
+.meta-info { flex: 1; }
+
+.meta-from {
+  font-size: 14px; font-weight: 500; color: var(--cream);
+  margin-bottom: 3px;
+}
+.meta-from span { font-weight: 300; color: var(--text-dim); font-size: 12px; }
+
+.meta-detail { font-size: 12px; color: var(--text-dim); font-weight: 300; }
+
+.meta-actions { display: flex; gap: 4px; }
+
+.tag-wrap { display: flex; gap: 8px; margin-bottom: 1.8rem; flex-wrap: wrap; }
+.tag {
+  padding: 3px 12px; border-radius: 100px;
+  font-size: 11px; letter-spacing: 0.04em;
+  border: 1px solid var(--border);
+  color: var(--text-dim); font-weight: 300;
+}
+.tag.gold { border-color: rgba(200,169,110,0.35); color: var(--gold); background: rgba(200,169,110,0.06); }
+
+.msg-body {
+  font-size: 14.5px; font-weight: 300;
+  color: var(--text-soft);
+  line-height: 1.85;
+}
+.msg-body p { margin-bottom: 1.2em; }
+.msg-body strong { color: var(--text-main); font-weight: 400; }
+.msg-body a { color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(200,169,110,0.3); }
+
+.msg-sig {
+  margin-top: 2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--border);
+  font-size: 13px; color: var(--text-dim); font-weight: 300;
+  line-height: 1.7;
+}
+.msg-sig strong { color: var(--gold-light); font-weight: 400; }
+
+.attachment-row { display: flex; gap: 10px; margin-top: 2rem; flex-wrap: wrap; }
+.attachment {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.attachment:hover { border-color: var(--border-md); background: rgba(200,169,110,0.05); }
+.att-icon {
+  width: 30px; height: 36px;
+  background: rgba(200,169,110,0.08);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gold); font-size: 9px; font-weight: 500;
+  letter-spacing: 0.05em;
+}
+.att-info { font-size: 12px; }
+.att-name { color: var(--text-main); margin-bottom: 1px; }
+.att-size { color: var(--text-dim); font-size: 10.5px; }
+
+.reply-box {
+  border-top: 1px solid var(--border);
+  padding: 1.5rem 2rem;
+  flex-shrink: 0;
+}
+
+.reply-inner {
+  border: 1px solid var(--border-md);
+  border-radius: 10px;
+  background: rgba(200,169,110,0.03);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.reply-inner:focus-within { border-color: rgba(200,169,110,0.45); }
+
+.reply-to {
+  padding: 8px 14px;
+  font-size: 12px; color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+  font-weight: 300;
+}
+.reply-to span { color: var(--gold-light); }
+
+.reply-textarea {
+  width: 100%; min-height: 80px;
+  padding: 12px 14px;
+  background: none; border: none; outline: none; resize: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px; font-weight: 300;
+  color: var(--text-main);
+  line-height: 1.6;
+}
+.reply-textarea::placeholder { color: var(--text-dim); }
+
+.reply-actions {
+  padding: 8px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid var(--border);
+}
+
+.reply-tools { display: flex; gap: 2px; }
+
+.send-btn {
+  padding: 7px 20px;
+  background: var(--ink-mid);
+  border: 1px solid var(--border-md);
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--gold-light); cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 7px;
+}
+.send-btn:hover { background: rgba(200,169,110,0.12); border-color: var(--gold); }
+
+/* ─── EMPTY STATE ─────────────────────────────────────────────────── */
+.empty-viewer {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 1rem;
+}
+
+.empty-icon {
+  width: 72px; height: 72px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+
+.empty-viewer h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem; font-weight: 300;
+  color: var(--text-soft);
+}
+
+.empty-viewer p { font-size: 13px; color: var(--text-dim); font-weight: 300; }
+
+/* ─── COMPOSE MODAL ───────────────────────────────────────────────── */
+.compose-modal {
+  position: fixed;
+  bottom: 2rem; right: 2rem;
+  width: 520px;
+  background: var(--ink-mid);
+  border: 1px solid var(--border-md);
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  display: none; flex-direction: column;
+  z-index: 100;
+  animation: slideUp 0.25s ease;
+}
+.compose-modal.open { display: flex; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.compose-header {
+  padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+
+.compose-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem; font-weight: 400;
+  color: var(--cream); letter-spacing: 0.02em;
+}
+
+.compose-header-btns { display: flex; gap: 4px; }
+
+.compose-field {
+  display: flex; align-items: center;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.compose-field label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-dim);
+  width: 34px; flex-shrink: 0;
+}
+
+.compose-field input {
+  flex: 1; background: none; border: none; outline: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 300; color: var(--text-main);
+}
+.compose-field input::placeholder { color: var(--text-dim); }
+
+.compose-body {
+  min-height: 180px; padding: 14px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px; font-weight: 300;
+  color: var(--text-main); line-height: 1.65;
+  resize: none; background: none; border: none; outline: none; width: 100%;
+}
+.compose-body::placeholder { color: var(--text-dim); }
+
+.compose-footer {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.compose-tools { display: flex; gap: 2px; }
+
+/* ─── ANIMATIONS ──────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.viewer-inner { animation: fadeIn 0.3s ease; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ══ HEADER ══ -->
+  <header class="header">
+    <div class="logo-wrap">
+      <div class="logo-gem"><span>V</span></div>
+      <div class="logo-text">VOPT</div>
+    </div>
+
+    <div class="header-search">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Pesquisar e-mails...">
+    </div>
+
+    <div class="header-right">
+      <button class="hbtn" title="Configurações">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <button class="hbtn" title="Notificações">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+      <div class="avatar" title="Maria Silva">M</div>
+    </div>
+  </header>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <button class="compose-btn" onclick="openCompose()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"/></svg>
+      Novo E-mail
+    </button>
+
+    <div class="nav-section">
+      <div class="nav-item active" onclick="setNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Entrada
+        <span class="nav-badge">7</span>
+      </div>
+      <div class="nav-item" onclick="setNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Favoritos
+        <span class="nav-badge">3</span>
+      </div>
+      <div class="nav-item" onclick="setNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Enviados
+      </div>
+      <div class="nav-item" onclick="setNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Rascunhos
+        <span class="nav-badge">2</span>
+      </div>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-section">
+      <div class="nav-label">Pastas</div>
+      <div class="nav-item" onclick="setNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Clientes
+      </div>
+      <div class="nav-item" onclick="setNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Financeiro
+      </div>
+      <div class="nav-item" onclick="setNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Projetos
+      </div>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-section">
+      <div class="nav-item" onclick="setNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        Lixeira
+      </div>
+      <div class="nav-item" onclick="setNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Spam
+      </div>
+    </div>
+
+    <div class="storage-wrap">
+      <div class="storage-label">
+        <span>Armazenamento</span>
+        <span>3,4 GB de 10 GB</span>
+      </div>
+      <div class="storage-bar"><div class="storage-fill"></div></div>
+    </div>
+  </aside>
+
+  <!-- ══ EMAIL LIST ══ -->
+  <section class="email-list">
+    <div class="list-header">
+      <h2 class="list-title">Entrada</h2>
+      <div class="list-actions">
+        <button class="list-btn" title="Atualizar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        </button>
+        <button class="list-btn" title="Filtrar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="list-filter">
+      <div class="filter-chip active" onclick="setFilter(this)">Todos</div>
+      <div class="filter-chip" onclick="setFilter(this)">Não lidos</div>
+      <div class="filter-chip" onclick="setFilter(this)">Favoritos</div>
+      <div class="filter-chip" onclick="setFilter(this)">Anexos</div>
+    </div>
+
+    <div class="emails" id="emailList"></div>
+  </section>
+
+  <!-- ══ VIEWER ══ -->
+  <section class="viewer" id="viewer">
+    <div class="empty-viewer" id="emptyState">
+      <div class="empty-icon">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </div>
+      <h3>Selecione uma mensagem</h3>
+      <p>Escolha um e-mail para visualizar o conteúdo</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- ══ COMPOSE MODAL ══ -->
+<div class="compose-modal" id="composeModal">
+  <div class="compose-header">
+    <span class="compose-title">Nova mensagem</span>
+    <div class="compose-header-btns">
+      <button class="tbtn" onclick="closeCompose()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="compose-field">
+    <label>Para</label>
+    <input type="email" placeholder="destinatario@email.com">
+  </div>
+  <div class="compose-field">
+    <label>CC</label>
+    <input type="email" placeholder="opcional">
+  </div>
+  <div class="compose-field">
+    <label>Ass.</label>
+    <input type="text" placeholder="Assunto da mensagem">
+  </div>
+  <textarea class="compose-body" placeholder="Escreva sua mensagem..."></textarea>
+  <div class="compose-footer">
+    <div class="compose-tools">
+      <button class="tbtn" title="Anexar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
+      <button class="tbtn" title="Formatação"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></button>
+    </div>
+    <button class="send-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      Enviar
+    </button>
+  </div>
+</div>
+
+<script>
+function setNav(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function setFilter(el) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function openCompose()  { document.getElementById("composeModal").classList.add("open"); }
+function closeCompose() { document.getElementById("composeModal").classList.remove("open"); }
+</script>
+</body>
+</html>
