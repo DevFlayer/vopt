@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 
 # ─── Segurança ───────────────────────────────────────────────────────────────
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]   # obrigatório — jamais hardcode
