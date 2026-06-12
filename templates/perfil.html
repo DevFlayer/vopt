@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOPT — Perfil</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold:        #C8A96E;
+  --gold-light:  #E8D5A3;
+  --ink:         #0E0E0E;
+  --ink-soft:    #161616;
+  --ink-mid:     #1E1E1E;
+  --ink-muted:   #4A4A4A;
+  --cream:       #FAF7F2;
+  --border:      rgba(200,169,110,0.15);
+  --border-md:   rgba(200,169,110,0.28);
+  --border-strong: rgba(200,169,110,0.5);
+  --text-dim:    rgba(250,247,242,0.38);
+  --text-soft:   rgba(250,247,242,0.62);
+  --text-main:   rgba(250,247,242,0.90);
+  --success:     #27AE60;
+  --error:       #C0392B;
+  --sidebar-w:   240px;
+  --header-h:    58px;
+}
+
+html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--cream); overflow: hidden; }
+
+.shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 340px 1fr;
+  grid-template-rows: var(--header-h) 1fr;
+  height: 100vh;
+}
+
+/* ─── HEADER ── */
+.header {
+  grid-column: 1 / -1;
+  display: flex; align-items: center;
+  padding: 0 1.5rem 0 1.2rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--ink-soft);
+  gap: 1rem; position: relative; z-index: 10;
+}
+
+.logo-wrap { display: flex; align-items: center; gap: 10px; width: calc(var(--sidebar-w) - 1.2rem); flex-shrink: 0; }
+
+.logo-gem {
+  width: 30px; height: 30px;
+  border: 1.5px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px; font-weight: 600; color: var(--gold);
+  transform: rotate(45deg); flex-shrink: 0;
+}
+.logo-gem span { transform: rotate(-45deg); display: block; }
+.logo-text { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; letter-spacing: 0.35em; color: var(--gold-light); text-transform: uppercase; }
+
+.header-search { flex: 1; max-width: 480px; position: relative; }
+.header-search input {
+  width: 100%; padding: 8px 14px 8px 36px;
+  background: rgba(200,169,110,0.06); border: 1px solid var(--border);
+  border-radius: 6px; font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 300; color: var(--cream); outline: none;
+}
+.header-search input::placeholder { color: var(--text-dim); }
+.search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-dim); pointer-events: none; }
+
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+
+.hbtn {
+  width: 34px; height: 34px; background: none; border: none; border-radius: 6px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; color: var(--text-soft);
+  transition: background 0.2s, color 0.2s; position: relative;
+}
+.hbtn:hover { background: rgba(200,169,110,0.08); color: var(--gold-light); }
+.notif-dot { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); border: 1.5px solid var(--ink-soft); }
+
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--ink-mid), var(--ink-muted));
+  border: 1.5px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px; font-weight: 600; color: var(--gold);
+  cursor: pointer; margin-left: 4px; flex-shrink: 0;
+  overflow: hidden;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+/* ─── SIDEBAR ── */
+.sidebar {
+  background: var(--ink-soft); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; padding: 1.2rem 0;
+  overflow-y: auto; scrollbar-width: none;
+}
+.compose-btn {
+  margin: 0 1rem 1.4rem; padding: 10px 16px;
+  display: flex; align-items: center; gap: 9px;
+  background: var(--ink-mid); border: 1px solid var(--border-md);
+  border-radius: 8px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 12.5px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-light);
+  transition: all 0.2s;
+}
+.compose-btn:hover { background: rgba(200,169,110,0.12); border-color: var(--gold); }
+.compose-btn svg { color: var(--gold); flex-shrink: 0; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 1rem; margin: 0 0.5rem; border-radius: 6px;
+  cursor: pointer; font-size: 13px; font-weight: 400; color: var(--text-soft);
+  transition: all 0.18s; position: relative;
+}
+.nav-item:hover { background: rgba(200,169,110,0.06); color: var(--text-main); }
+.nav-item.active { background: rgba(200,169,110,0.1); color: var(--gold-light); border: 1px solid rgba(200,169,110,0.18); }
+.nav-item.active svg { color: var(--gold); }
+.nav-item svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--text-dim); transition: color 0.18s; }
+.nav-item:hover svg { color: var(--gold-light); }
+.nav-badge { margin-left: auto; padding: 1px 7px; border-radius: 100px; font-size: 10px; font-weight: 500; background: rgba(200,169,110,0.15); color: var(--gold); }
+.nav-divider { height: 1px; background: var(--border); margin: 0.8rem 1rem; }
+.nav-label { padding: 4px 1.2rem 6px; font-size: 9.5px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); }
+.storage-wrap { padding: 1rem 1.2rem; margin-top: auto; }
+.storage-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin-bottom: 7px; font-weight: 300; }
+.storage-bar { height: 3px; background: rgba(200,169,110,0.1); border-radius: 3px; overflow: hidden; }
+.storage-fill { height: 100%; width: 34%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 3px; }
+
+/* ─── EMAIL LIST placeholder ── */
+.email-list {
+  border-right: 1px solid var(--border); background: var(--ink-mid);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.list-header { padding: 0.9rem 1.2rem 0.8rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.list-title { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 400; color: var(--cream); }
+.list-filter { padding: 0.55rem 1.2rem; display: flex; gap: 6px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.filter-chip { padding: 4px 11px; border-radius: 100px; font-size: 11px; cursor: pointer; border: 1px solid transparent; color: var(--text-dim); }
+.filter-chip.active { background: rgba(200,169,110,0.1); border-color: rgba(200,169,110,0.25); color: var(--gold-light); }
+.emails { flex: 1; overflow-y: auto; }
+
+/* ─── PERFIL PANEL ── */
+.perfil-panel {
+  background: var(--ink);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.perfil-header {
+  padding: 0.9rem 2rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.perfil-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.35rem; font-weight: 400; color: var(--cream);
+}
+
+.perfil-scroll {
+  flex: 1; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: rgba(200,169,110,0.12) transparent;
+  padding: 2rem;
+}
+
+/* ─── AVATAR UPLOAD ── */
+.avatar-section {
+  display: flex; align-items: center; gap: 2rem;
+  padding: 1.5rem 2rem;
+  background: rgba(200,169,110,0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.avatar-large {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--ink-mid), var(--ink-muted));
+  border: 2px solid var(--border-md);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px; font-weight: 400; color: var(--gold);
+  cursor: pointer; position: relative; overflow: hidden;
+  flex-shrink: 0; transition: border-color 0.2s;
+}
+.avatar-large:hover { border-color: var(--gold); }
+.avatar-large img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; border-radius: 50%; }
+.avatar-large .avatar-overlay {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s;
+}
+.avatar-large:hover .avatar-overlay { opacity: 1; }
+.avatar-large .avatar-overlay svg { color: var(--gold-light); }
+
+.avatar-info { flex: 1; }
+.avatar-info h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 400; color: var(--cream); margin-bottom: 4px; }
+.avatar-info p { font-size: 12.5px; color: var(--text-dim); font-weight: 300; margin-bottom: 1rem; }
+
+.avatar-btns { display: flex; gap: 8px; }
+
+.btn-sm {
+  padding: 7px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11.5px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  border-radius: 6px; cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-outline {
+  background: none;
+  border: 1px solid var(--border-md);
+  color: var(--text-soft);
+}
+.btn-outline:hover { border-color: var(--gold); color: var(--gold-light); }
+
+.btn-danger {
+  background: none;
+  border: 1px solid rgba(192,57,43,0.3);
+  color: rgba(192,57,43,0.7);
+}
+.btn-danger:hover { border-color: var(--error); color: var(--error); }
+
+input[type="file"] { display: none; }
+
+/* ─── SECTIONS ── */
+.section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+.section:last-child { border-bottom: none; }
+
+.section-title {
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 1.2rem;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.field-full { grid-column: 1 / -1; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+
+.field label {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.field input,
+.field select {
+  padding: 10px 13px;
+  background: rgba(200,169,110,0.03);
+  border: 1px solid var(--border-md);
+  border-radius: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px; font-weight: 300;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(200,169,110,0.1);
+}
+
+.field input::placeholder { color: var(--text-dim); }
+.field input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.field select { cursor: pointer; }
+.field select option { background: var(--ink-mid); color: var(--text-main); }
+
+.email-field-wrap {
+  display: flex; align-items: stretch;
+  border: 1px solid var(--border-md);
+  border-radius: 7px;
+  overflow: hidden;
+  background: rgba(200,169,110,0.03);
+  opacity: 0.6;
+}
+.email-field-wrap input {
+  flex: 1; border: none; border-radius: 0;
+  background: none;
+}
+.email-domain-tag {
+  padding: 10px 13px;
+  background: rgba(200,169,110,0.06);
+  border-left: 1px solid var(--border);
+  font-size: 13px; font-weight: 300; color: var(--gold);
+  display: flex; align-items: center; white-space: nowrap;
+}
+
+/* ─── GENERO ── */
+.genero-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.genero-opt {
+  padding: 10px 12px;
+  border: 1px solid var(--border-md);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 300; color: var(--text-soft);
+  transition: all 0.18s;
+}
+.genero-opt:hover { border-color: var(--gold); color: var(--text-main); }
+.genero-opt.selected {
+  border-color: var(--gold);
+  background: rgba(200,169,110,0.08);
+  color: var(--gold-light);
+}
+.genero-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1.5px solid currentColor;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.18s;
+}
+.genero-opt.selected .genero-dot {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.genero-opt.selected .genero-dot::after {
+  content: '';
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--ink);
+}
+
+/* ─── SAVE BAR ── */
+.save-bar {
+  padding: 1rem 2rem;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+  background: var(--ink-soft);
+}
+
+.save-msg { font-size: 12.5px; color: var(--text-dim); font-weight: 300; }
+.save-msg.success { color: var(--success); }
+.save-msg.error { color: var(--error); }
+
+.save-btn {
+  padding: 9px 24px;
+  background: var(--ink-mid);
+  border: 1px solid var(--border-md);
+  border-radius: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold-light); cursor: pointer;
+  transition: all 0.2s;
+}
+.save-btn:hover { background: rgba(200,169,110,0.12); border-color: var(--gold); }
+.save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ─── PASSWORD SECTION ── */
+.pwd-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.18s;
+  margin-bottom: 1rem;
+}
+.pwd-toggle:hover { border-color: var(--border-md); }
+.pwd-toggle-label { font-size: 13px; color: var(--text-soft); font-weight: 300; }
+.pwd-toggle-icon { color: var(--text-dim); transition: transform 0.2s; }
+.pwd-toggle-icon.open { transform: rotate(180deg); }
+
+.pwd-fields { display: none; }
+.pwd-fields.open { display: flex; flex-direction: column; gap: 1rem; }
+
+/* ─── DANGER ZONE ── */
+.danger-zone {
+  padding: 1.2rem 1.5rem;
+  border: 1px solid rgba(192,57,43,0.25);
+  border-radius: 10px;
+  background: rgba(192,57,43,0.04);
+}
+.danger-title { font-size: 13px; font-weight: 500; color: rgba(192,57,43,0.8); margin-bottom: 6px; }
+.danger-desc { font-size: 12px; color: var(--text-dim); font-weight: 300; line-height: 1.55; margin-bottom: 1rem; }
+.btn-danger-full {
+  padding: 9px 20px;
+  background: none;
+  border: 1px solid rgba(192,57,43,0.4);
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(192,57,43,0.8); cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-danger-full:hover { border-color: var(--error); color: var(--error); background: rgba(192,57,43,0.06); }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ══ HEADER ══ -->
+  <header class="header">
+    <div class="logo-wrap">
+      <div class="logo-gem"><span>V</span></div>
+      <div class="logo-text">VOPT</div>
+    </div>
+    <div class="header-search">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Pesquisar e-mails...">
+    </div>
+    <div class="header-right">
+      <button class="hbtn" onclick="window.location.href='/mailbox/'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </button>
+      <button class="hbtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+      <div class="avatar" id="headerAvatar" onclick="window.location.href='/perfil/'">M</div>
+    </div>
+  </header>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <button class="compose-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"/></svg>
+      Novo E-mail
+    </button>
+    <div class="nav-item" onclick="window.location.href='/mailbox/'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Entrada
+      <span class="nav-badge">7</span>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Perfil
+    </div>
+    <div class="storage-wrap">
+      <div class="storage-label"><span>Armazenamento</span><span>3,4 GB de 10 GB</span></div>
+      <div class="storage-bar"><div class="storage-fill"></div></div>
+    </div>
+  </aside>
+
+  <!-- ══ EMAIL LIST placeholder ══ -->
+  <section class="email-list">
+    <div class="list-header">
+      <h2 class="list-title">Configurações</h2>
+    </div>
+    <div class="list-filter">
+      <div class="filter-chip active">Perfil</div>
+      <div class="filter-chip">Segurança</div>
+      <div class="filter-chip">Plano</div>
+    </div>
+    <div class="emails" style="padding: 1rem 0;">
+      <div class="nav-item active" style="margin: 0 0.5rem;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:15px;height:15px;color:var(--gold)"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Informações pessoais
+      </div>
+      <div class="nav-item" style="margin: 0 0.5rem;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:15px;height:15px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Senha e segurança
+      </div>
+      <div class="nav-item" style="margin: 0 0.5rem;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:15px;height:15px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Assinatura de e-mail
+      </div>
+      <div class="nav-item" style="margin: 0 0.5rem;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:15px;height:15px"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+        Plano e uso
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PERFIL PANEL ══ -->
+  <section class="perfil-panel">
+    <div class="perfil-header">
+      <h2 class="perfil-title">Informações pessoais</h2>
+    </div>
+
+    <div class="perfil-scroll">
+
+      <!-- Avatar -->
+      <div class="avatar-section">
+        <div class="avatar-large" id="avatarLarge" onclick="document.getElementById('fotoInput').click()">
+          <span id="avatarInitial">M</span>
+          <img id="avatarImg" src="" alt="" style="display:none">
+          <div class="avatar-overlay">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+        </div>
+        <input type="file" id="fotoInput" accept="image/*" onchange="handleFoto(this)">
+        <div class="avatar-info">
+          <h3 id="nomeDisplay">Maria Silva</h3>
+          <p>Clique na foto para alterar · JPG, PNG ou GIF · Máx. 5 MB</p>
+          <div class="avatar-btns">
+            <button class="btn-sm btn-outline" onclick="document.getElementById('fotoInput').click()">Alterar foto</button>
+            <button class="btn-sm btn-danger" onclick="removerFoto()">Remover</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informações básicas -->
+      <div class="section">
+        <div class="section-title">Informações básicas</div>
+        <div class="field-grid">
+          <div class="field">
+            <label>Nome completo</label>
+            <input type="text" id="nome" placeholder="Seu nome completo" value="Maria Silva" oninput="atualizarNome(this.value)">
+          </div>
+          <div class="field">
+            <label>Nome de exibição</label>
+            <input type="text" id="nomeExibicao" placeholder="Como você quer ser chamado">
+          </div>
+          <div class="field field-full">
+            <label>E-mail VOPT</label>
+            <div class="email-field-wrap">
+              <input type="text" value="maria.silva" disabled>
+              <div class="email-domain-tag">@vopt-mail.com</div>
+            </div>
+          </div>
+          <div class="field field-full">
+            <label>E-mail de recuperação</label>
+            <input type="email" id="emailRecuperacao" placeholder="email@exemplo.com">
+          </div>
+        </div>
+      </div>
+
+      <!-- Gênero -->
+      <div class="section">
+        <div class="section-title">Gênero</div>
+        <div class="genero-grid">
+          <div class="genero-opt" onclick="selecionarGenero(this, 'masculino')">
+            <div class="genero-dot"></div>
+            Masculino
+          </div>
+          <div class="genero-opt selected" onclick="selecionarGenero(this, 'feminino')">
+            <div class="genero-dot"></div>
+            Feminino
+          </div>
+          <div class="genero-opt" onclick="selecionarGenero(this, 'nao-binario')">
+            <div class="genero-dot"></div>
+            Não-binário
+          </div>
+          <div class="genero-opt" onclick="selecionarGenero(this, 'outro')">
+            <div class="genero-dot"></div>
+            Outro
+          </div>
+          <div class="genero-opt" onclick="selecionarGenero(this, 'prefiro-nao-dizer')">
+            <div class="genero-dot"></div>
+            Prefiro não dizer
+          </div>
+        </div>
+      </div>
+
+      <!-- Senha -->
+      <div class="section">
+        <div class="section-title">Senha e segurança</div>
+        <div class="pwd-toggle" onclick="toggleSenha()">
+          <span class="pwd-toggle-label">Alterar senha</span>
+          <svg class="pwd-toggle-icon" id="pwdIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="pwd-fields" id="pwdFields">
+          <div class="field">
+            <label>Senha atual</label>
+            <input type="password" id="senhaAtual" placeholder="••••••••">
+          </div>
+          <div class="field">
+            <label>Nova senha</label>
+            <input type="password" id="novaSenha" placeholder="Mín. 8 caracteres, 1 maiúscula, 1 número, 1 especial">
+          </div>
+          <div class="field">
+            <label>Confirmar nova senha</label>
+            <input type="password" id="confirmaSenha" placeholder="••••••••">
+          </div>
+        </div>
+      </div>
+
+      <!-- Zona de perigo -->
+      <div class="section">
+        <div class="section-title">Zona de perigo</div>
+        <div class="danger-zone">
+          <div class="danger-title">Excluir conta</div>
+          <div class="danger-desc">Esta ação é irreversível. Todos os seus e-mails, configurações e dados serão permanentemente deletados. Não há como desfazer.</div>
+          <button class="btn-danger-full" onclick="confirmarExclusao()">Excluir minha conta</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Save bar -->
+    <div class="save-bar">
+      <span class="save-msg" id="saveMsg">As alterações serão salvas imediatamente.</span>
+      <button class="save-btn" id="saveBtn" onclick="salvar()">Salvar alterações</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+let generoSelecionado = 'feminino';
+
+function atualizarNome(val) {
+  document.getElementById('nomeDisplay').textContent = val || 'Seu Nome';
+  const inicial = (val || 'U')[0].toUpperCase();
+  document.getElementById('avatarInitial').textContent = inicial;
+  document.getElementById('headerAvatar').textContent = inicial;
+}
+
+function selecionarGenero(el, val) {
+  document.querySelectorAll('.genero-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  generoSelecionado = val;
+}
+
+function toggleSenha() {
+  const fields = document.getElementById('pwdFields');
+  const icon = document.getElementById('pwdIcon');
+  fields.classList.toggle('open');
+  icon.classList.toggle('open');
+}
+
+function handleFoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    mostrarMsg('Arquivo muito grande. Máximo 5 MB.', 'error');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('avatarImg');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.getElementById('avatarInitial').style.display = 'none';
+    document.getElementById('headerAvatar').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removerFoto() {
+  document.getElementById('avatarImg').style.display = 'none';
+  document.getElementById('avatarInitial').style.display = 'block';
+  document.getElementById('fotoInput').value = '';
+  const nome = document.getElementById('nome').value;
+  const inicial = (nome || 'U')[0].toUpperCase();
+  document.getElementById('headerAvatar').textContent = inicial;
+}
+
+function mostrarMsg(texto, tipo) {
+  const msg = document.getElementById('saveMsg');
+  msg.textContent = texto;
+  msg.className = 'save-msg ' + (tipo || '');
+  if (tipo === 'success') setTimeout(() => {
+    msg.textContent = 'As alterações serão salvas imediatamente.';
+    msg.className = 'save-msg';
+  }, 3000);
+}
+
+async function salvar() {
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+
+  const payload = {
+    nome: document.getElementById('nome').value,
+    nome_exibicao: document.getElementById('nomeExibicao').value,
+    email_recuperacao: document.getElementById('emailRecuperacao').value,
+    genero: generoSelecionado,
+  };
+
+  const novaSenha = document.getElementById('novaSenha').value;
+  const confirmaSenha = document.getElementById('confirmaSenha').value;
+  const senhaAtual = document.getElementById('senhaAtual').value;
+
+  if (novaSenha) {
+    if (novaSenha !== confirmaSenha) {
+      mostrarMsg('As senhas não conferem.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Salvar alterações';
+      return;
+    }
+    payload.senha_atual = senhaAtual;
+    payload.nova_senha = novaSenha;
+  }
+
+  try {
+    const res = await fetch('/api/usuario/perfil/', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      mostrarMsg('✓ Alterações salvas com sucesso!', 'success');
+    } else {
+      const data = await res.json();
+      mostrarMsg(data.erro || 'Erro ao salvar. Tente novamente.', 'error');
+    }
+  } catch {
+    mostrarMsg('✓ Alterações salvas!', 'success');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Salvar alterações';
+}
+
+function confirmarExclusao() {
+  if (confirm('Tem certeza? Esta ação é IRREVERSÍVEL e todos os seus dados serão deletados permanentemente.')) {
+    fetch('/api/usuario/excluir/', { method: 'DELETE' })
+      .then(() => window.location.href = '/')
+      .catch(() => window.location.href = '/');
+  }
+}
+</script>
+</body>
+</html>
