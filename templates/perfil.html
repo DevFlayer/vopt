@@ -709,12 +709,17 @@ async function salvar() {
 
     if (res.ok) {
       mostrarMsg('✓ Alterações salvas com sucesso!', 'success');
+      setTimeout(() => window.location.href = '/mailbox/', 600);
     } else {
       const data = await res.json();
-      mostrarMsg(data.erro || 'Erro ao salvar. Tente novamente.', 'error');
+      let erro = data.erro || 'Erro ao salvar. Tente novamente.';
+      if (typeof erro === 'object') {
+        erro = Object.values(erro).flat().join(' ');
+      }
+      mostrarMsg(erro, 'error');
     }
   } catch {
-    mostrarMsg('✓ Alterações salvas!', 'success');
+    mostrarMsg('Erro de rede ao salvar. Tente novamente.', 'error');
   }
 
   btn.disabled = false;

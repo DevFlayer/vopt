@@ -16,6 +16,14 @@ from django.utils import timezone
 CPF_RE  = re.compile(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")
 CNPJ_RE = re.compile(r"^\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}$")
 
+GENERO_CHOICES = [
+    ("masculino", "Masculino"),
+    ("feminino", "Feminino"),
+    ("nao-binario", "Não-binário"),
+    ("outro", "Outro"),
+    ("prefiro-nao-dizer", "Prefiro não dizer"),
+]
+
 
 def validar_documento(valor):
     if not (CPF_RE.match(valor) or CNPJ_RE.match(valor)):
@@ -54,10 +62,13 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     TIPO_CHOICES = [("pf", "Pessoa Física"), ("pj", "Pessoa Jurídica")]
 
-    nome       = models.CharField(max_length=80,  validators=[validar_nome])
-    email      = models.EmailField(unique=True)
-    documento  = models.CharField(max_length=20,  validators=[validar_documento])
-    tipo       = models.CharField(max_length=2, choices=TIPO_CHOICES, editable=False)
+    nome              = models.CharField(max_length=80,  validators=[validar_nome])
+    email             = models.EmailField(unique=True)
+    documento         = models.CharField(max_length=20,  validators=[validar_documento])
+    nome_exibicao     = models.CharField(max_length=80, blank=True, default="")
+    email_recuperacao = models.EmailField(max_length=254, blank=True, null=True)
+    genero            = models.CharField(max_length=20, choices=GENERO_CHOICES, blank=True, default="")
+    tipo              = models.CharField(max_length=2, choices=TIPO_CHOICES, editable=False)
 
     trial_ativo = models.BooleanField(default=True)
     trial_fim   = models.DateTimeField(default=trial_expira)

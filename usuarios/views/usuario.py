@@ -1,8 +1,9 @@
 """Views de perfil do usuário autenticado."""
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..serializers import UsuarioPublicoSerializer
+from ..serializers import UsuarioPerfilSerializer, UsuarioPublicoSerializer
 
 
 class PerfilView(APIView):
@@ -10,6 +11,14 @@ class PerfilView(APIView):
 
     def get(self, request):
         serializer = UsuarioPublicoSerializer(request.user)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        serializer = UsuarioPerfilSerializer(request.user, data=request.data, partial=True)
+        if not serializer.is_valid():
+            return Response({"erro": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.save()
         return Response(serializer.data)
 
 
