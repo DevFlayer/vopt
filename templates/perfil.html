@@ -408,6 +408,41 @@ input[type="file"] { display: none; }
   transition: all 0.2s;
 }
 .btn-danger-full:hover { border-color: var(--error); color: var(--error); background: rgba(192,57,43,0.06); }
+
+/* ─── MODAL ── */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-backdrop.open { display: flex; }
+.modal-box {
+  width: min(520px, calc(100% - 2rem));
+  background: var(--ink-soft);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+  padding: 28px 28px 22px;
+}
+.modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.modal-title { font-size: 18px; line-height: 1.2; color: var(--cream); font-weight: 600; }
+.modal-text { font-size: 13px; color: var(--text-dim); line-height: 1.7; margin-bottom: 1.4rem; }
+.modal-field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+.modal-field label { font-size: 12px; color: var(--text-soft); font-weight: 500; }
+.modal-field input {
+  width: 100%; padding: 12px 14px; border-radius: 12px;
+  border: 1px solid var(--border); background: rgba(200,169,110,0.05);
+  color: var(--cream); font-size: 13px; outline: none;
+}
+.modal-field input:focus { border-color: var(--border-md); }
+.modal-footer { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem; }
+.modal-btn { padding: 11px 18px; border-radius: 10px; border: 1px solid var(--border); font-size: 12px; font-weight: 500; text-transform: uppercase; cursor: pointer; }
+.modal-btn.secondary { background: transparent; color: var(--text-soft); }
+.modal-btn.danger { background: var(--error); color: #fff; border-color: transparent; }
+.modal-error { font-size: 12px; color: var(--error); min-height: 18px; margin-top: -0.5rem; margin-bottom: 0.75rem; }
 </style>
 </head>
 <body>
@@ -598,7 +633,7 @@ input[type="file"] { display: none; }
         <div class="danger-zone">
           <div class="danger-title">Excluir conta</div>
           <div class="danger-desc">Esta ação é irreversível. Todos os seus e-mails, configurações e dados serão permanentemente deletados. Não há como desfazer.</div>
-          <button class="btn-danger-full" onclick="confirmarExclusao()">Excluir minha conta</button>
+          <button class="btn-danger-full" onclick="abrirModalExclusao()">Excluir minha conta</button>
         </div>
       </div>
 
@@ -613,8 +648,65 @@ input[type="file"] { display: none; }
 
 </div>
 
+<div class="modal-backdrop" id="deleteModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Tem certeza que deseja excluir sua conta?</div>
+        <p class="modal-text">Esta ação é permanente. Se você continuar, precisará confirmar sua senha duas vezes antes que a conta seja removida.</p>
+      </div>
+      <button class="modal-btn secondary" onclick="fecharModalExclusao()">Fechar</button>
+    </div>
+    <div class="modal-error" id="deleteModalError"></div>
+    <div class="modal-field">
+      <label for="senhaExclusao">Senha</label>
+      <input type="password" id="senhaExclusao" placeholder="Digite sua senha">
+    </div>
+    <div class="modal-field">
+      <label for="senhaExclusaoConfirma">Confirmar senha</label>
+      <input type="password" id="senhaExclusaoConfirma" placeholder="Digite a senha novamente">
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn secondary" onclick="fecharModalExclusao()">Cancelar</button>
+      <button class="modal-btn danger" onclick="excluirConta()">Sim, excluir conta</button>
+    </div>
+  </div>
+</div>
+
 <script>
 let generoSelecionado = 'feminino';
+
+async function renovarToken() {
+  const refreshToken = localStorage.getItem('refresh');
+  if (!refreshToken) {
+    window.location.href = '/';
+    return false;
+  }
+
+  try {
+    const res = await fetch('/api/auth/refresh/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh: refreshToken })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.access) {
+        localStorage.setItem('access', data.access);
+        return true;
+      }
+    }
+    
+    localStorage.removeItem('access');
+    localStorage.removeItem('refresh');
+    window.location.href = '/';
+    return false;
+  } catch (err) {
+    console.error('Erro ao renovar token:', err);
+    return false;
+  }
+}
 
 function atualizarNome(val) {
   document.getElementById('nomeDisplay').textContent = val || 'Seu Nome';
@@ -701,11 +793,43 @@ async function salvar() {
   }
 
   try {
-    const res = await fetch('/api/usuario/perfil/', {
+    const token = localStorage.getItem('access');
+    if (!token) {
+      const renovou = await renovarToken();
+      if (!renovou) {
+        mostrarMsg('Sessão expirada. Redirecionando para login...', 'error');
+        return;
+      }
+    }
+
+    const finalToken = localStorage.getItem('access');
+    let res = await fetch('/api/usuario/perfil/', {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${finalToken}`
+      },
       body: JSON.stringify(payload)
     });
+
+    // Se token expirou, tenta renovar
+    if (res.status === 401) {
+      const renovou = await renovarToken();
+      if (renovou) {
+        const novoToken = localStorage.getItem('access');
+        res = await fetch('/api/usuario/perfil/', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${novoToken}`
+          },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        mostrarMsg('Sessão expirada. Redirecionando para login...', 'error');
+        return;
+      }
+    }
 
     if (res.ok) {
       mostrarMsg('✓ Alterações salvas com sucesso!', 'success');
@@ -726,11 +850,79 @@ async function salvar() {
   btn.textContent = 'Salvar alterações';
 }
 
-function confirmarExclusao() {
-  if (confirm('Tem certeza? Esta ação é IRREVERSÍVEL e todos os seus dados serão deletados permanentemente.')) {
-    fetch('/api/usuario/excluir/', { method: 'DELETE' })
-      .then(() => window.location.href = '/')
-      .catch(() => window.location.href = '/');
+function abrirModalExclusao() {
+  const modal = document.getElementById('deleteModal');
+  modal.classList.add('open');
+  document.getElementById('deleteModalError').textContent = '';
+  document.getElementById('senhaExclusao').value = '';
+  document.getElementById('senhaExclusaoConfirma').value = '';
+}
+
+function fecharModalExclusao() {
+  document.getElementById('deleteModal').classList.remove('open');
+}
+
+async function excluirConta() {
+  const senha = document.getElementById('senhaExclusao').value;
+  const confirma = document.getElementById('senhaExclusaoConfirma').value;
+  const erroEl = document.getElementById('deleteModalError');
+
+  if (!senha || !confirma) {
+    erroEl.textContent = 'Informe a senha duas vezes para confirmar a exclusão.';
+    return;
+  }
+
+  if (senha !== confirma) {
+    erroEl.textContent = 'As senhas não coincidem.';
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('access');
+    if (!token) {
+      const renovou = await renovarToken();
+      if (!renovou) {
+        erroEl.textContent = 'Sessão expirada. Redirecionando...';
+        setTimeout(() => window.location.href = '/', 1500);
+        return;
+      }
+    }
+
+    const finalToken = localStorage.getItem('access');
+    let res = await fetch('/api/usuario/perfil/', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${finalToken}`
+      },
+      body: JSON.stringify({ senha_exclusao: senha, senha_exclusao_confirma: confirma })
+    });
+
+    // Se token expirou, tenta renovar
+    if (res.status === 401) {
+      const renovou = await renovarToken();
+      if (renovou) {
+        const novoToken = localStorage.getItem('access');
+        res = await fetch('/api/usuario/perfil/', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${novoToken}`
+          },
+          body: JSON.stringify({ senha_exclusao: senha, senha_exclusao_confirma: confirma })
+        });
+      }
+    }
+
+    if (res.ok) {
+      window.location.href = '/';
+      return;
+    }
+
+    const data = await res.json();
+    erroEl.textContent = data.erro || 'Não foi possível excluir a conta. Tente novamente.';
+  } catch (error) {
+    erroEl.textContent = 'Falha de rede. Tente novamente.';
   }
 }
 </script>
