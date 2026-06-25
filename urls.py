@@ -10,4 +10,5 @@ urlpatterns = [
     path("api/auth/",    include("usuarios.urls.auth")),
     path("api/usuario/", include("usuarios.urls.usuario")),
     path("api/info/",    include("usuarios.urls.info")),
+    path("perfil/", TemplateView.as_view(template_name="perfil.html"), name="perfil"),
 ]
